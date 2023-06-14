@@ -6,7 +6,7 @@ import winsound
 import sys
 
 
-class ThreadedAlarm(threading.Thread):
+class Alarm:
     def __init__(self, hours: int, minutes: int, sound: bool):
         self.alarm_time: tuple[int, int] = (hours, minutes)
         self.sound = sound
@@ -15,11 +15,13 @@ class ThreadedAlarm(threading.Thread):
     def alarm(self):
         while True:
             # Check if it's time for the alarm
+            print("Waiting ... \r", end="")
             now = time.localtime()
             if now.tm_hour == self.alarm_time[0] and now.tm_min == self.alarm_time[1]:
-                print("Alarm!")
+                print("\nAlarm!")
                 if self.sound:
-                    winsound.PlaySound(self.notification_tone, winsound.SND_ALIAS)
+                    for _ in range(3):
+                        winsound.PlaySound(self.notification_tone, winsound.SND_ALIAS)
                 return
 
             # Wait for one second
@@ -35,6 +37,11 @@ class Clock:
         self.timer_on: bool = False
         self.stopwatch_on: bool = False
         self.notification_tone: str = r"assets/subtle_beeps.wav"
+
+    def alarm(self, hours: int, minutes: int, sound: bool):
+        a = Alarm(hours, minutes, sound)
+        x = threading.Thread(target=a.alarm(), daemon=True)
+        x.start()
 
     def repeat_timer(self, times: int, duration: int, sound: bool):
         ran = 0
@@ -54,7 +61,7 @@ class Clock:
         while time.time() <= end_time:
             remaining_time = end_time - time.time()
             print(f"Remaining time: {remaining_time:.2f} seconds\r", end="")
-            time.sleep(0.1)
+            time.sleep(0.5)
         self.timer_on = False
         print("\rTimer complete.                                          ")
         if sound:
@@ -83,7 +90,7 @@ class Clock:
                 break
             else:
                 continue
-            time.sleep(0.1)
+            time.sleep(0.5)
 
     def generate_time_string(self, elapsed_time: float) -> str:
         if elapsed_time < 60:
@@ -100,13 +107,6 @@ class Clock:
 
     def stop_stopwatch(self):
         self.stopwatch_on = False
-
-    def alarm(self, hours: int, minutes: int, sound: bool):
-        try:
-            t = ThreadedAlarm(hours=hours, minutes=minutes, sound=sound)
-            t.start()
-        except (KeyboardInterrupt, Exception):
-            print(f"Alarm is still on for {hours}:{minutes}.")
 
 
 if __name__ == "__main__":
