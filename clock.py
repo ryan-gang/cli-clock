@@ -60,33 +60,38 @@ class Clock:
             winsound.PlaySound(self.notification_tone, winsound.SND_FILENAME)
 
     def start_stopwatch(self):
-        self.stopwatch_on, paused = True, False
+        self.stopwatch_on, paused, paused_at = True, False, 0
         start_time = time.time()
         while self.stopwatch_on:
             while not msvcrt.kbhit() and not paused:
                 elapsed_time = time.time() - start_time
-                print(self.generate_time_string(elapsed_time), end="")
+                print("Elapsed time:", self.generate_time_string(elapsed_time), end="")
 
             cmd = msvcrt.getch().decode("utf-8")
             if cmd == "p":  # Pause
-                paused = True
-                print("\nPaused")
-            if cmd == "s":  # Unpause
-                paused = False
-            if cmd == "q":  # Quit
+                paused ^= True  # Toggle Pause
+                if paused:
+                    paused_at = time.time()
+                    print("\nPaused.\t", end="")
+                else:
+                    elapsed = time.time() - paused_at
+                    print(f"Resumed after {self.generate_time_string(elapsed).strip()}.")
+            elif cmd == "q":  # Quit
                 self.stop_stopwatch()
                 print("\n")
                 break
+            else:
+                continue
             time.sleep(0.1)
 
     def generate_time_string(self, elapsed_time: float) -> str:
         if elapsed_time < 60:
-            string = f"Elapsed time: {elapsed_time:.2f} seconds\r"
+            string = f"{elapsed_time:.2f} seconds\r"
         elif elapsed_time < 60 * 60:
-            string = f"Elapsed time: {elapsed_time//60:.2f} minutes {elapsed_time%60:.2f} seconds\r"
+            string = f"{elapsed_time//60:.2f} minutes {elapsed_time%60:.2f} seconds\r"
         else:
             string = (
-                f"Elapsed time: {elapsed_time // (60*60):.2f} hours"
+                f"{elapsed_time // (60*60):.2f} hours"
                 f" {elapsed_time % (60 * 60) // 60:.2f} minutes"
                 f" {elapsed_time % (60 * 60) % 60:.2f} seconds\r"
             )
@@ -109,7 +114,7 @@ if __name__ == "__main__":
     Repeat timer for 5 minutes, 10 times with sound : py -m clock -r 10 300 1
     Timer for 10 seconds with sound : py -m clock -t 10 1
     Stopwatch : py -m clock -s
-    Stopwatch can be paused (p), unpaused (s), and quit (q).
+    Stopwatch can be paused (p), unpaused (p), and quit (q).
     Alarm clock for 3:40 PM with sound : py -m clock -a 15 40 1
     """
     parser = argparse.ArgumentParser(description="Simple CLI Clock")
@@ -138,7 +143,7 @@ if __name__ == "__main__":
         "-s",
         action="store_true",
         help=(
-            "Start a stopwatch. The stopwatch supports pause (p), unpause (s) and quit (q)"
+            "Start a stopwatch. The stopwatch supports pause (p), unpause (p) and quit (q)"
             " commands."
         ),
     )
