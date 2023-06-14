@@ -3,6 +3,7 @@ import msvcrt
 import threading
 import time
 import winsound
+import sys
 
 
 class ThreadedAlarm(threading.Thread):
@@ -161,12 +162,11 @@ if __name__ == "__main__":
 
     if args.timer:
         clock.start_timer(args.timer[0], args.timer[1])
-
-    if args.stopwatch:
+    elif args.stopwatch:
         clock.start_stopwatch()
-
-    if args.alarm:
+    elif args.alarm:
         clock.alarm(args.alarm[0], args.alarm[1], args.alarm[2])
-
-    if args.repeat:
+    elif args.repeat:
         clock.repeat_timer(args.repeat[0], args.repeat[1], args.repeat[2])
+    else:
+        sys.exit()
