@@ -42,7 +42,7 @@ class Clock:
                 self.start_timer(duration, sound)
                 times -= 1
                 ran += 1
-        except KeyboardInterrupt or Exception:
+        except (KeyboardInterrupt, Exception):
             print(f"Timer for {duration} seconds, ran for {ran} times.")
 
     def start_timer(self, duration: int, sound: bool):
@@ -62,7 +62,7 @@ class Clock:
     def start_stopwatch(self):
         self.stopwatch_on = True
         start_time = time.time()
-        flag = 1
+        string = ""
         try:
             while self.stopwatch_on:
                 elapsed_time = time.time() - start_time
@@ -70,14 +70,12 @@ class Clock:
                     string = f"Elapsed time: {elapsed_time:.2f} seconds\r"
                     print(string, end="")
                 elif elapsed_time < 60 * 60:
-                    flag = 2
                     string = (
                         f"Elapsed time: {elapsed_time//60:.2f} minutes"
                         f" {elapsed_time%60:.2f} seconds\r"
                     )
                     print(string, end="")
                 else:
-                    flag = 3
                     string = (
                         f"Elapsed time: {elapsed_time // (60*60):.2f} hours"
                         f" {elapsed_time % (60 * 60) // 60:.2f} minutes"
@@ -85,7 +83,7 @@ class Clock:
                     )
                     print(string, end="")
                 time.sleep(0.1)
-        except KeyboardInterrupt or Exception:
+        except (KeyboardInterrupt, Exception):
             self.stop_stopwatch()
             print(string)
 
@@ -96,7 +94,7 @@ class Clock:
         try:
             t = ThreadedAlarm(hours=hours, minutes=minutes, sound=sound)
             t.start()
-        except KeyboardInterrupt or Exception:
+        except (KeyboardInterrupt, Exception):
             print(f"Alarm is still on for {hours}:{minutes}.")
 
 
