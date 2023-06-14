@@ -5,6 +5,8 @@ import time
 import winsound
 import sys
 
+TOLERANCE = 1  # seconds
+
 
 class Alarm:
     def __init__(self, hours: int, minutes: int, sound: bool):
@@ -25,7 +27,7 @@ class Alarm:
                 return
 
             # Wait for one second
-            time.sleep(1)
+            time.sleep(TOLERANCE)
 
 
 class Clock:
@@ -61,7 +63,7 @@ class Clock:
         while time.time() <= end_time:
             remaining_time = end_time - time.time()
             print(f"Remaining time: {remaining_time:.2f} seconds\r", end="")
-            time.sleep(0.5)
+            time.sleep(TOLERANCE)
         self.timer_on = False
         print("\rTimer complete.                                          ")
         if sound:
@@ -83,6 +85,9 @@ class Clock:
                     print("\nPaused.\t", end="")
                 else:
                     elapsed = time.time() - paused_at
+                    start_time += elapsed
+                    # Or else stopwatch would count the entire time, including
+                    # the time it was paused for.
                     print(f"Resumed after {self.generate_time_string(elapsed).strip()}.")
             elif cmd == "q":  # Quit
                 self.stop_stopwatch()
@@ -90,7 +95,7 @@ class Clock:
                 break
             else:
                 continue
-            time.sleep(0.5)
+            time.sleep(TOLERANCE)
 
     def generate_time_string(self, elapsed_time: float) -> str:
         if elapsed_time < 60:
