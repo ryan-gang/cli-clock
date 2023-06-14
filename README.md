@@ -1,4 +1,4 @@
-## A simple CLI clock.
+# A simple CLI clock.
 Written in pure python, no external dependencies. Tested on windows only.
 Script also uses `[msvcrt](https://docs.python.org/3/library/msvcrt.html)` module, so might not work properly on unix systems. 
 
