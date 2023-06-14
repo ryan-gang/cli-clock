@@ -109,16 +109,17 @@ if __name__ == "__main__":
     Repeat timer for 5 minutes, 10 times with sound : py -m clock -r 10 300 1
     Timer for 10 seconds with sound : py -m clock -t 10 1
     Stopwatch : py -m clock -s
+    Stopwatch can be paused (p), unpaused (s), and quit (q).
     Alarm clock for 3:40 PM with sound : py -m clock -a 15 40 1
     """
-    parser = argparse.ArgumentParser(description="CLI Clock")
+    parser = argparse.ArgumentParser(description="Simple CLI Clock")
     parser.add_argument(
         "--timer",
         "-t",
         metavar=("SECONDS", "SOUND_BOOL"),
         nargs=2,
         type=int,
-        help="Set a timer for a specified number of seconds",
+        help="Set a timer for a specified number of seconds, and play an alarm at the end.",
     )
     parser.add_argument(
         "--repeat",
@@ -127,18 +128,27 @@ if __name__ == "__main__":
         nargs=3,
         type=int,
         help=(
-            "Set a timer for a specified number of seconds, that repeats after the seconds are over"
+            "Set a timer for 'SECONDS' number of seconds, that repeats 'REPEATS' times, and plays"
+            " an alarm at the end. If 'REPEATS' is negative, it would repeat infinitely."
         ),
     )
 
-    parser.add_argument("--stopwatch", "-s", action="store_true", help="Use stopwatch mode")
+    parser.add_argument(
+        "--stopwatch",
+        "-s",
+        action="store_true",
+        help=(
+            "Start a stopwatch. The stopwatch supports pause (p), unpause (s) and quit (q)"
+            " commands."
+        ),
+    )
     parser.add_argument(
         "--alarm",
         "-a",
         metavar=("HOUR", "MINUTE", "SOUND_BOOL"),
         nargs=3,
         type=int,
-        help="Set an alarm for a specific time (24-hour format)",
+        help="Set an alarm for a specific time (24-hour format).",
     )
     args = parser.parse_args()
 
@@ -149,7 +159,6 @@ if __name__ == "__main__":
 
     if args.stopwatch:
         clock.start_stopwatch()
-        clock.stop_stopwatch()
 
     if args.alarm:
         clock.alarm(args.alarm[0], args.alarm[1], args.alarm[2])
