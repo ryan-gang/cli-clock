@@ -1,4 +1,5 @@
 import argparse
+import msvcrt
 import threading
 import time
 import winsound
@@ -6,7 +7,6 @@ import winsound
 
 class ThreadedAlarm(threading.Thread):
     def __init__(self, hours: int, minutes: int, sound: bool):
-        super().__init__()
         self.alarm_time: tuple[int, int] = (hours, minutes)
         self.sound = sound
         self.notification_tone: str = r"assets/subtle_beeps.wav"
@@ -60,32 +60,37 @@ class Clock:
             winsound.PlaySound(self.notification_tone, winsound.SND_FILENAME)
 
     def start_stopwatch(self):
-        self.stopwatch_on = True
+        self.stopwatch_on, paused = True, False
         start_time = time.time()
-        string = ""
-        try:
-            while self.stopwatch_on:
+        while self.stopwatch_on:
+            while not msvcrt.kbhit() and not paused:
                 elapsed_time = time.time() - start_time
-                if elapsed_time < 60:
-                    string = f"Elapsed time: {elapsed_time:.2f} seconds\r"
-                    print(string, end="")
-                elif elapsed_time < 60 * 60:
-                    string = (
-                        f"Elapsed time: {elapsed_time//60:.2f} minutes"
-                        f" {elapsed_time%60:.2f} seconds\r"
-                    )
-                    print(string, end="")
-                else:
-                    string = (
-                        f"Elapsed time: {elapsed_time // (60*60):.2f} hours"
-                        f" {elapsed_time % (60 * 60) // 60:.2f} minutes"
-                        f" {elapsed_time % (60 * 60) % 60:.2f} seconds\r"
-                    )
-                    print(string, end="")
-                time.sleep(0.1)
-        except (KeyboardInterrupt, Exception):
-            self.stop_stopwatch()
-            print(string)
+                print(self.generate_time_string(elapsed_time), end="")
+
+            cmd = msvcrt.getch().decode("utf-8")
+            if cmd == "p":  # Pause
+                paused = True
+                print("\nPaused")
+            if cmd == "s":  # Unpause
+                paused = False
+            if cmd == "q":  # Quit
+                self.stop_stopwatch()
+                print("\n")
+                break
+            time.sleep(0.1)
+
+    def generate_time_string(self, elapsed_time: float) -> str:
+        if elapsed_time < 60:
+            string = f"Elapsed time: {elapsed_time:.2f} seconds\r"
+        elif elapsed_time < 60 * 60:
+            string = f"Elapsed time: {elapsed_time//60:.2f} minutes {elapsed_time%60:.2f} seconds\r"
+        else:
+            string = (
+                f"Elapsed time: {elapsed_time // (60*60):.2f} hours"
+                f" {elapsed_time % (60 * 60) // 60:.2f} minutes"
+                f" {elapsed_time % (60 * 60) % 60:.2f} seconds\r"
+            )
+        return string
 
     def stop_stopwatch(self):
         self.stopwatch_on = False
