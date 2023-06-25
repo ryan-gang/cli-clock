@@ -1,23 +1,13 @@
 import msvcrt
 import time
 from collections import defaultdict
+
 from clock.commons import Commons
 
 TOLERANCE = 1  # seconds
 
 
 class Stopwatch:
-    """
-    Options :
-    p : Pause and unpause, between sessions.
-    s : Get total cumulative stats.
-    i : Enter task details.
-    t : Show task details.
-    b : Get accumulated break time.
-    B : Start long break.
-    q : Stop watch.
-    """
-
     def __init__(self):
         self.stopwatch_on: bool = False
         self.session = 0

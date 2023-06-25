@@ -2,3 +2,4 @@
 __pycache__/
 todo.*
 clock.egg-info/
+build/lib/clock/

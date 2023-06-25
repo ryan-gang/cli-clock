@@ -1,8 +1,8 @@
 import argparse
 import sys
 
-from clock.stopwatch import Stopwatch
 from clock.helpers import Clock
+from clock.stopwatch import Stopwatch
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Simple CLI Clock")
@@ -30,10 +30,7 @@ if __name__ == "__main__":
         "--stopwatch",
         "-s",
         action="store_true",
-        help=(
-            "Start a stopwatch. The stopwatch supports pause (p), unpause (p) and quit (q)"
-            " commands."
-        ),
+        help="Start a stopwatch. The stopwatch supports a host of commands. Refer to the readme.",
     )
     parser.add_argument(
         "--alarm",
