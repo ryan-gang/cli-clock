@@ -1,10 +1,6 @@
-import argparse
-import msvcrt
-import sys
 import threading
 import time
 import winsound
-from datetime import datetime
 
 TOLERANCE = 1  # seconds
 
@@ -33,7 +29,7 @@ class Alarm:
 
 class Clock:
     """
-    Simple clock class, implementing alarms, stopwatch and a timer.
+    Simple clock class, implementing alarms and a timer.
     """
 
     def __init__(self):
@@ -69,110 +65,3 @@ class Clock:
         print("\rTimer complete.                                          ")
         if sound:
             winsound.PlaySound(self.notification_tone, winsound.SND_FILENAME)
-
-    def start_stopwatch(self):
-        self.stopwatch_on, paused, paused_at = True, False, 0
-        start_time = time.time()
-        print(f"Stopwatch started at : {self.get_timestamp()}")
-        while self.stopwatch_on:
-            while not msvcrt.kbhit() and not paused:
-                elapsed_time = time.time() - start_time
-                print("Elapsed time:", self.generate_time_string(elapsed_time), end="")
-                time.sleep(TOLERANCE)
-
-            cmd = msvcrt.getch().decode("utf-8")
-            if cmd == "p":  # Pause
-                paused ^= True  # Toggle Pause
-                if paused:
-                    paused_at = time.time()
-                    print("\nPaused.\t", end="")
-                else:
-                    elapsed = time.time() - paused_at
-                    start_time += elapsed
-                    # Or else stopwatch would count the entire time, including
-                    # the time it was paused for.
-                    print(
-                        f"Stopwatch restarted at : {self.get_timestamp()}, after"
-                        f" {self.generate_time_string(elapsed).strip()}."
-                    )
-            elif cmd == "q":  # Quit
-                self.stop_stopwatch()
-                print("\n")
-                break
-            else:
-                continue
-
-    def generate_time_string(self, elapsed_time: float) -> str:
-        if elapsed_time < 60:
-            string = f"{elapsed_time:.2f} seconds\r"
-        elif elapsed_time < 60 * 60:
-            string = f"{elapsed_time//60:.2f} minutes {elapsed_time%60:.2f} seconds\r"
-        else:
-            string = (
-                f"{elapsed_time // (60*60):.2f} hours"
-                f" {elapsed_time % (60 * 60) // 60:.2f} minutes"
-                f" {elapsed_time % (60 * 60) % 60:.2f} seconds\r"
-            )
-        return string
-
-    def stop_stopwatch(self):
-        self.stopwatch_on = False
-
-    def get_timestamp(self) -> str:
-        ts = time.time()
-        return datetime.fromtimestamp(ts).strftime("%Y-%m-%d %H:%M:%S")
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Simple CLI Clock")
-    parser.add_argument(
-        "--timer",
-        "-t",
-        metavar=("SECONDS", "SOUND_BOOL"),
-        nargs=2,
-        type=int,
-        help="Set a timer for a specified number of seconds, and play an alarm at the end.",
-    )
-    parser.add_argument(
-        "--repeat",
-        "-r",
-        metavar=("REPEATS", "SECONDS", "SOUND_BOOL"),
-        nargs=3,
-        type=int,
-        help=(
-            "Set a timer for 'SECONDS' number of seconds, that repeats 'REPEATS' times, and plays"
-            " an alarm at the end. If 'REPEATS' is negative, it would repeat infinitely."
-        ),
-    )
-
-    parser.add_argument(
-        "--stopwatch",
-        "-s",
-        action="store_true",
-        help=(
-            "Start a stopwatch. The stopwatch supports pause (p), unpause (p) and quit (q)"
-            " commands."
-        ),
-    )
-    parser.add_argument(
-        "--alarm",
-        "-a",
-        metavar=("HOUR", "MINUTE", "SOUND_BOOL"),
-        nargs=3,
-        type=int,
-        help="Set an alarm for a specific time (24-hour format).",
-    )
-    args = parser.parse_args()
-
-    clock = Clock()
-
-    if args.timer:
-        clock.start_timer(args.timer[0], args.timer[1])
-    elif args.stopwatch:
-        clock.start_stopwatch()
-    elif args.alarm:
-        clock.alarm(args.alarm[0], args.alarm[1], args.alarm[2])
-    elif args.repeat:
-        clock.repeat_timer(args.repeat[0], args.repeat[1], args.repeat[2])
-    else:
-        sys.exit()
