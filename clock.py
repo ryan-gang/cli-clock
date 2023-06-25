@@ -1,9 +1,10 @@
 import argparse
 import msvcrt
+import sys
 import threading
 import time
 import winsound
-import sys
+from datetime import datetime
 
 TOLERANCE = 1  # seconds
 
@@ -72,10 +73,12 @@ class Clock:
     def start_stopwatch(self):
         self.stopwatch_on, paused, paused_at = True, False, 0
         start_time = time.time()
+        print(f"Stopwatch started at : {self.get_timestamp()}")
         while self.stopwatch_on:
             while not msvcrt.kbhit() and not paused:
                 elapsed_time = time.time() - start_time
                 print("Elapsed time:", self.generate_time_string(elapsed_time), end="")
+                time.sleep(TOLERANCE)
 
             cmd = msvcrt.getch().decode("utf-8")
             if cmd == "p":  # Pause
@@ -88,14 +91,16 @@ class Clock:
                     start_time += elapsed
                     # Or else stopwatch would count the entire time, including
                     # the time it was paused for.
-                    print(f"Resumed after {self.generate_time_string(elapsed).strip()}.")
+                    print(
+                        f"Stopwatch restarted at : {self.get_timestamp()}, after"
+                        f" {self.generate_time_string(elapsed).strip()}."
+                    )
             elif cmd == "q":  # Quit
                 self.stop_stopwatch()
                 print("\n")
                 break
             else:
                 continue
-            time.sleep(TOLERANCE)
 
     def generate_time_string(self, elapsed_time: float) -> str:
         if elapsed_time < 60:
@@ -112,6 +117,10 @@ class Clock:
 
     def stop_stopwatch(self):
         self.stopwatch_on = False
+
+    def get_timestamp(self) -> str:
+        ts = time.time()
+        return datetime.fromtimestamp(ts).strftime("%Y-%m-%d %H:%M:%S")
 
 
 if __name__ == "__main__":
