@@ -29,7 +29,11 @@ Doesn't count towards total break time.
 - `q` : Stop watch.  
 
 Note : These flags are not passed while starting the stopwatch. These are passed while it is running.
-# Installation.
+## Installation.
+### Clone and install. 
 1. Git clone the repo.
 2. Create a venv, and activate it.
 3. `pip install .` in the parent directory.
+
+### Directly install from repo.  
+`py -m pip install git+https://github.com/ryan-gang/cli-clock.git`
