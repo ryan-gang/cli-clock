@@ -7,8 +7,12 @@ Repeat timer for 5 minutes, 10 times with sound
 `py -m clock -r 10 300 1`  
 Timer for 10 seconds with sound  
 `py -m clock -t 10 1`  
-Stopwatch  
+Stopwatch
 `py -m clock -s`  
 Stopwatch can be paused (p), unpaused (p), and quit (q).  
 Alarm clock for 3:40 PM with sound  
 `py -m clock -a 15 40 1`  
+
+
+# For installation, 
+Just `pip install -e .` in the parent directory.

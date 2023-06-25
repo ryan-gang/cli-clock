@@ -1,7 +1,7 @@
 import msvcrt
 import time
 from collections import defaultdict
-from commons import Commons
+from clock.commons import Commons
 
 TOLERANCE = 1  # seconds
 

@@ -1,8 +1,8 @@
 import argparse
 import sys
 
-from clock import Clock
-from stopwatch import Stopwatch
+from clock.stopwatch import Stopwatch
+from clock.helpers import Clock
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Simple CLI Clock")
